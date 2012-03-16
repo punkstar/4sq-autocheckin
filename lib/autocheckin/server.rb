@@ -36,7 +36,7 @@ module Autocheckin
     # Home page
     ########################################################
     get '/' do
-      if session[:user]
+      if not session[:user].nil?
         erb :dashboard, :locals => { :devices => current_user.devices }
       else 
         redirect to('/login')
@@ -95,7 +95,7 @@ module Autocheckin
     # Add Device
     ########################################################
     post '/device/add' do
-      redirect to('/?fail=true') if session[:user].nil?
+      halt 403, 'You must be logged in' if session[:user].nil?
       
       mac_addr = params[:mac_addr]
       name     = params[:name]
@@ -110,6 +110,8 @@ module Autocheckin
     end
     
     post '/device/delete' do
+      halt 403, 'You must be logged in' if session[:user].nil?
+      
       id = params[:id]
       
       device = Device.first( :user => current_user(), :id => id )
@@ -126,10 +128,13 @@ module Autocheckin
     # Send to foursquare for token
     ########################################################
     get '/foursquare/connect' do
+      halt 403, 'You must be logged in' if session[:user].nil?
       redirect @foursquare.auth_code.authorize_url(:redirect_uri => @settings['foursquare']['callback_url'])
     end
     
     get '/foursquare/callback' do
+      halt 403, 'You must be logged in' if session[:user].nil?
+      
       code = params[:code]
       token = @foursquare.auth_code.get_token(code, :redirect_uri => @settings['foursquare']['callback_url'])
       
