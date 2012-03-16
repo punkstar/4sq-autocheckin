@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Foursquare Autocheckin</title>
+        
+        <link href="/bootstrap/css/bootstrap.css" rel="stylesheet" />
+        <link href="/bootstrap/css/bootstrap-responsive.css" rel="stylesheet" />
+        <link href="/css/style.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="navbar">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="brand" href="/">Foursquare Auto-login</a>
+                    
+                    <ul class="nav pull-right">
+                        <% if current_user %>
+                            <li><a href="/logout">Logout</a></li>
+                        <% else %>
+                            <li><a href="/login">Login / Register</a></li>
+                        <% end %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <% if session[:user] %>
+                <div class="alert alert-notice">
+                    You are currently logged in as <%= h current_user.email %>.
+                </div>
+            <% end %>
+            
+            <% if params[:fail] %>
+                <div class="alert alert-error">
+                    There was an error with something you just did.. probably.  I'll change then when I can be arsed to implement flash messaging.  Sorry.
+                </div>
+            <% elsif params[:success] %>
+            <div class="alert alert-success">
+                Whatever you just did was successful.  I'll change then when I can be arsed to implement flash messaging.  Sorry.
+            </div>
+            <% end %>
+            
+            <% if current_user and current_user.token.nil? %>
+                <div class="alert alert-error">
+                    Hey!  You've not connected this app with Foursquare yet, so we <strong>can't automatically check you in!</strong>  <a href="/foursquare/connect">Click here</a> to connect with Foursquare</a>.
+                </div>
+            <% end %>
+
+            <section id="global">
+                <%= yield %>
+            </section>
+        </div>
+    </body>
+</html>

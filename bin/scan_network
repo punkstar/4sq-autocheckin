@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+lib_dir = File.join(File.dirname(__FILE__), '..', 'lib')
+$LOAD_PATH.unshift lib_dir if File.directory?(lib_dir)
+
+require 'autocheckin'
+require 'pp'
+
+DataMapper.auto_upgrade!
+
+network = Autocheckin::Network.new
+
+while true
+  puts "-- Start of Run (#{DateTime.now}) --"
+  
+  network.find_hosts do |mac, ip|
+    puts "Mac: #{mac}, IP: #{ip}"
+  
+    # Attempt to find a devise with the mac address
+    device = Autocheckin::Device.first( :mac_addr => mac )
+  
+    if not device.nil?
+      today = DateTime.now
+    
+      limit_start = DateTime.new(today.year, today.month, today.day)
+      limit_end   = DateTime.new(today.year, today.month, today.day, 23, 59, 59)
+    
+      # If we find a device, see if there has been a recorded sighting today
+      entry_today_count = Autocheckin::Entry.count( :user => device.user, :created_at => limit_start..limit_end )
+    
+      if entry_today_count == 0
+        # Tell foursquare
+        device.user.perform_checkin
+      
+        # Record the sighting
+        Autocheckin::Entry.create(
+          :device     => device,
+          :ip_addr    => ip,
+          :created_at => Time.now
+        )
+      end
+    end
+  end
+  
+  puts "-- End of Run --"
+  sleep 5
+end
