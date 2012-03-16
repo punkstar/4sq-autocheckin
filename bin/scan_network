@@ -26,9 +26,11 @@ while true
       limit_end   = DateTime.new(today.year, today.month, today.day, 23, 59, 59)
     
       # If we find a device, see if there has been a recorded sighting today
-      entry_today_count = Autocheckin::Entry.count( :user => device.user, :created_at => limit_start..limit_end )
+      entry_today_count = Autocheckin::Entry.count( :device => { :user => device.user }, :created_at => limit_start..limit_end )
     
       if entry_today_count == 0
+        puts "Logging in #{device.user.email}"
+        
         # Tell foursquare
         device.user.perform_checkin
       

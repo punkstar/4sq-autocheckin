@@ -1,3 +1,5 @@
+source :rubygems
+
 # Database access
 gem 'data_mapper'
 gem 'dm-mysql-adapter'

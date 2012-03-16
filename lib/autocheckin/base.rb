@@ -45,7 +45,7 @@ module Autocheckin
     
     def perform_checkin
       client = Foursquare2::Client.new(:oauth_token => self.token)
-      client.add_checkin(:venueId => Autocheckin::Config.instance.settings['foursquare']['venue_id'], :broadcast => 'public')
+      client.add_checkin(:venueId => Autocheckin::Config.instance.settings['foursquare']['venue_id'], :broadcast => 'public', :shout => "Automatic check-in.")
     end
     
     def authenticate(password)
