@@ -4,6 +4,11 @@ module Autocheckin
   require 'digest/sha1'
   require 'foursquare2'
   
+  # @FIXME: This is not advised, but fixes the "OpenSSL::SSL::SSLError: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed" error
+  require 'openssl'
+  OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+  
+  # Connect to the database
   DataMapper.setup(:default, Autocheckin::Config.instance.settings['database']['dsn'])
   
   class Network
