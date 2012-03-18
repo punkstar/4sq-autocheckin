@@ -31,14 +31,16 @@
                 </div>
             <% end %>
             
-            <% if params[:fail] %>
+            <% if flash[:error] %>
                 <div class="alert alert-error">
-                    There was an error with something you just did.. probably.  I'll change then when I can be arsed to implement flash messaging.  Sorry.
+                    <strong>There was a problem:</strong> <%= flash[:error] %>
                 </div>
-            <% elsif params[:success] %>
-            <div class="alert alert-success">
-                Whatever you just did was successful.  I'll change then when I can be arsed to implement flash messaging.  Sorry.
-            </div>
+            <% end %>
+            
+            <% if flash[:success] %>
+                <div class="alert alert-success">
+                    <strong>Sweet!</strong> <%= flash[:success] %>
+                </div>
             <% end %>
             
             <% if current_user and current_user.token.nil? %>

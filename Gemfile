@@ -13,3 +13,6 @@ gem 'oauth2'
 
 # nmap result parsing
 gem 'nmap-parser'
+
+# Require an older version of rack due to a bug in rack-flash (https://github.com/nakajima/rack-flash/issues/8)
+gem "sinatra-flash"

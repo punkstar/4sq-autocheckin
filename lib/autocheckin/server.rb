@@ -4,11 +4,12 @@ module Autocheckin
   require 'sinatra/base'
   require 'foursquare2'
   require 'oauth2'
-  require 'pp'
+  require 'sinatra/flash'
   
   class Server < Sinatra::Base
-    
     enable :sessions
+    
+    register Sinatra::Flash
     
     set :root, File.join(File.dirname(__FILE__), '..', '..', 'var', 'server')
     
@@ -54,11 +55,12 @@ module Autocheckin
       
       if user.save
         session[:user] = user.id
-        redirect to('/?success=true')
-      else
-        pp user.errors
         
-        redirect to('/login?fail=true&email=' + email)
+        flash[:success] = "You've been registered"
+        redirect to('/')
+      else
+        flash[:error] = "There was a problem with your registration"
+        redirect to('/login?email=' + email)
       end
     end
     
@@ -77,9 +79,12 @@ module Autocheckin
       
       if not user.nil? and user.authenticate(password)
         session[:user] = user.id
-        redirect to('/?success=true')
+        
+        flash[:success] = "You've been logged in"
+        redirect to('/')
       else
-        redirect to('/login?fail=true&email=' + email)
+        flash[:error] = "Invalid username or password"
+        redirect to('/login?email=' + email)
       end
     end
     
@@ -88,7 +93,8 @@ module Autocheckin
     ########################################################
     get '/logout' do
       session[:user] = nil
-      redirect to('/?success=true')      
+      flash[:success] = "You have been logged out"
+      redirect to('/')
     end
     
     ########################################################
@@ -103,9 +109,11 @@ module Autocheckin
       device = Device.new( :user => current_user(), :mac_addr => mac_addr, :name => name )
       
       if device.save
-        redirect to('/?success=true')
+        flash[:success] = "Your device has been added"
+        redirect to('/')
       else
-        redirect to('/?fail=true&mac_addr=' + mac_addr + '&name=' + name)
+        flash[:fail] = "You've been logged in!"
+        redirect to('/?mac_addr=' + mac_addr + '&name=' + name)
       end
     end
     
@@ -118,9 +126,11 @@ module Autocheckin
       
       if not device.nil?
         device.destroy
-        redirect to('/?success=true')
+        flash[:success] = "Device has been deleted"
+        redirect to('/')
       else
-        redirect to('/?fail=true')
+        flash[:error] = "There was a problem deleting the device"
+        redirect to('/')
       end
     end
     
@@ -139,8 +149,9 @@ module Autocheckin
       token = @foursquare.auth_code.get_token(code, :redirect_uri => @settings['foursquare']['callback_url'])
       
       current_user.update(:token => token.token)
-      
-      redirect to('/?success=true')
+
+      flash[:success] = "We're all hooked up for Foursquare!"
+      redirect to('/')
     end
   end
 end
