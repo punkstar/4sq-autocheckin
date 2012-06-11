@@ -8,3 +8,5 @@ foursquare:
   id: foursquare_app_id 
   secret: foursquare_app_scret
   venue_id: venue_id
+  latlon: 51.381515,-2.359821
+  alt: 32
