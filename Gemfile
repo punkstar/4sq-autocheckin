@@ -1,7 +1,9 @@
-source :rubygems
+source 'https://rubygems.org'
+
+ruby '1.9.3'
 
 # Database access
-gem 'data_mapper'
+gem 'dm-core', :git => 'https://github.com/datamapper/dm-core', :branch => 'release-1.2'
 gem 'dm-mysql-adapter'
 
 # Registration server
